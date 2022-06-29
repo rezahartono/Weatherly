@@ -48,6 +48,7 @@ dependencies:
   flutter_glow: ^0.2.0
   geolocator: ^9.0.0
   geocoding: ^2.0.4
+  connectivity_plus: ^2.3.5
 
 dev_dependencies:
   flutter_test:

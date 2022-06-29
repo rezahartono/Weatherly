@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
@@ -14,6 +17,7 @@ import 'package:weather/utils/date_time_utils.dart';
 import 'package:weather/utils/size_config.dart';
 import 'package:weather/utils/theme.dart';
 import 'package:weather/views/detail_page_view.dart';
+import 'package:weather/views/no_internet_connection_view.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({Key? key}) : super(key: key);
@@ -29,11 +33,33 @@ class _HomePageViewState extends State<HomePageView> {
     cityName: '',
   );
   WeatherModel currentWeather = WeatherModel();
+  bool _isConnectionSuccessful = false;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    _checkConnection();
+  }
+
+  // check connection method
+  Future<void> _checkConnection() async {
+    try {
+      final response = await InternetAddress.lookup('www.google.com');
+
+      setState(() {
+        _isConnectionSuccessful = response.isNotEmpty;
+      });
+    } on SocketException catch (e) {
+      setState(() {
+        _isConnectionSuccessful = false;
+      });
+    }
+
+    if (_isConnectionSuccessful) {
+      _getCurrentLocation();
+    } else {
+      Get.offAll(const NoInternetConnectionView());
+    }
   }
 
   // get current location method
